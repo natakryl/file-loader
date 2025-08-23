@@ -1,27 +1,30 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import AuthPage from "./pages/AuthPage";
+import SuggestTokenPage from "./pages/SuggestTokenPage";
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>      
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const isAuth = !!localStorage.getItem("Ya.Oauth.Sdk.Token"); 
+  return isAuth ? children : <Navigate to="/auth" replace />;
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/suggest/token" element={<SuggestTokenPage />} />
+
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <HomePage />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}
