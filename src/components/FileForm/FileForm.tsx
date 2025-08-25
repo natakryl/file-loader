@@ -1,29 +1,37 @@
-import React, { useState } from "react";
+import React from "react";
+import { useFileUpload } from "../../hooks/useFileUpload";
 
 export default function FileForm() {
-  const [file, setFile] = useState<File | null>(null);
-  const [fileName, setFileName] = useState("");
+  const {
+    file,
+    fileName,
+    setFileName,
+    downloadUrl,
+    loading,
+    error,
+    handleFileChange,
+    submitFile,
+  } = useFileUpload();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] || null;
-    setFile(selectedFile);
-    if (selectedFile) {
-      setFileName(selectedFile.name);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file || !fileName) return;
-    console.log("Submit:", { file, fileName });
+  const formatSize = (size: number) => {
+    if (size < 1024) return size + " B";
+    if (size < 1024 ** 2) return (size / 1024).toFixed(1) + " KB";
+    if (size < 1024 ** 3) return (size / 1024 ** 2).toFixed(1) + " MB";
+    return (size / 1024 ** 3).toFixed(1) + " GB";
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 400 }}>
+    <form onSubmit={(e) => e.preventDefault()} style={{ display: "grid", gap: 12, maxWidth: 400 }}>
       <label>
         Choose file:
-        <input type="file" onChange={handleFileChange} />
+        <input
+          type="file"
+          onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+          disabled={loading}
+        />
       </label>
+
+      {file && <div>File: {file.name} ({formatSize(file.size)})</div>}
 
       <label>
         File name:
@@ -31,13 +39,21 @@ export default function FileForm() {
           type="text"
           value={fileName}
           onChange={(e) => setFileName(e.target.value)}
-          placeholder="Enter file name"
+          disabled={loading}
         />
       </label>
 
-      <button type="submit" disabled={!file || !fileName.trim()}>
-        Upload
+      {error && <div style={{ color: "red" }}>{error}</div>}
+
+      <button type="button" onClick={submitFile} disabled={!file || !fileName.trim() || loading}>
+        {loading ? "Uploading..." : "Upload"}
       </button>
+
+      {downloadUrl && (
+        <div>
+          File uploaded. <a href={downloadUrl} target="_blank" rel="noreferrer">Download</a>
+        </div>
+      )}
     </form>
   );
 }

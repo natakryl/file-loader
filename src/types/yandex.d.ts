@@ -8,6 +8,7 @@ declare global {
           client_id: string;
           response_type: "token";
           redirect_uri?: string; 
+          scope?: string;
         },
         tokenPageOrigin: string, 
         suggestParams?: {

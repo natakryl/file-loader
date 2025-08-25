@@ -1,4 +1,4 @@
-const CLIENT_ID = "5510b3a98189422b8906493cdd7ee758";
+const CLIENT_ID = "c22a6ba7662d40b99c6823c31d6461ac";
 const REDIRECT_PATH = "/suggest/token";
 
 // подключение SDK
@@ -35,6 +35,7 @@ export async function initYandexAuth(): Promise<any> {
       client_id: CLIENT_ID,
       response_type: "token",
       redirect_uri: redirectUri,
+      scope: "disk:write",
     },
     origin,
     {
