@@ -18,10 +18,6 @@ export default function SuggestTokenPage() {
       } catch (e) {
         console.error("Ошибка YaSendSuggestToken:", e);
       }
-
-      // setTimeout(() => {
-      //   try { window.close(); } catch {}
-      // }, 600);
     };
 
     script.onerror = () => {
