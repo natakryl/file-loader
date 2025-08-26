@@ -8,7 +8,6 @@ export class YandexFileUploader implements IFileUploader {
     const path = encodeURIComponent(`/${fileName}`);
     const uploadUrl = `https://cloud-api.yandex.net/v1/disk/resources/upload?path=${path}&overwrite=${overwrite}`;
 
-    //Запрашиваем URL для загрузки
     const uploadLinkResponse = await fetch(uploadUrl, {
       method: "GET",
       headers: { Authorization: `OAuth ${token}` },

@@ -36,9 +36,7 @@ export function useFileUpload(fileUploader: IFileUploader) {
         } else {
           setError(err.message);
         }
-      } else {
-        setError("Ошибка загрузки файла");
-      }
+      } 
     } finally {
       setLoading(false);
     }

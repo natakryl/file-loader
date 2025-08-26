@@ -1,9 +1,8 @@
 import type { YandexToken } from "../types/yandexToken";
 
-const CLIENT_ID = "c22a6ba7662d40b99c6823c31d6461ac";
-const REDIRECT_PATH = "/suggest/token";
+const CLIENT_ID = import.meta.env.VITE_YA_CLIENT_ID;
+const REDIRECT_PATH = import.meta.env.VITE_YA_REDIRECT_PATH;
 
-// подключение SDK
 function loadSdk(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (window.YaAuthSuggest) {
@@ -21,7 +20,6 @@ function loadSdk(): Promise<void> {
   });
 }
 
-// инициализация и авторизация
 export async function initYandexAuth(): Promise<YandexToken>{
   await loadSdk();
 
