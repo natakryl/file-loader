@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef } from "react";
+import "./FileForm.scss";
 import { useFileUpload } from "../../hooks/useFileUpload";
 
 export default function FileForm() {
@@ -6,12 +7,14 @@ export default function FileForm() {
     file,
     fileName,
     setFileName,
-    downloadUrl,
-    loading,
-    error,
     handleFileChange,
     submitFile,
+    loading,
+    error,
+    downloadUrl,
   } = useFileUpload();
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const formatSize = (size: number) => {
     if (size < 1024) return size + " B";
@@ -20,38 +23,67 @@ export default function FileForm() {
     return (size / 1024 ** 3).toFixed(1) + " GB";
   };
 
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const droppedFile = e.dataTransfer.files?.[0] || null;
+    handleFileChange(droppedFile);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitFile();
+  };
+
   return (
-    <form onSubmit={(e) => e.preventDefault()} style={{ display: "grid", gap: 12, maxWidth: 400 }}>
-      <label>
-        Choose file:
+    <form className="file-form" onSubmit={handleSubmit}>
+      <h2>Загрузка файла</h2>
+
+      <div
+        className="dropzone"
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+      >
         <input
           type="file"
+          ref={inputRef}
           onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+          style={{ display: "none" }}
           disabled={loading}
         />
-      </label>
+        <p>{fileName || "Перетащите файл сюда или нажмите для выбора"}</p>
+      </div>
 
-      {file && <div>File: {file.name} ({formatSize(file.size)})</div>}
+      {file && (
+        <div className="file-info">
+          <strong>Файл:</strong> {file.name} <br />
+          <strong>Размер:</strong> {formatSize(file.size)}
+        </div>
+      )}
 
       <label>
-        File name:
+        Имя файла:
         <input
           type="text"
           value={fileName}
           onChange={(e) => setFileName(e.target.value)}
+          placeholder="Введите имя"
           disabled={loading}
         />
       </label>
 
-      {error && <div style={{ color: "red" }}>{error}</div>}
+      {error && <div className="error">{error}</div>}
 
-      <button type="button" onClick={submitFile} disabled={!file || !fileName.trim() || loading}>
-        {loading ? "Uploading..." : "Upload"}
+      <button type="submit" disabled={!file || !fileName.trim() || loading}>
+        {loading ? "Загрузка..." : "Загрузить"}
       </button>
 
       {downloadUrl && (
-        <div>
-          File uploaded. <a href={downloadUrl} target="_blank" rel="noreferrer">Download</a>
+        <div className="success">
+          Файл загружен.{" "}
+          <a href={downloadUrl} target="_blank" rel="noreferrer">
+            Скачать
+          </a>
         </div>
       )}
     </form>
