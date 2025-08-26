@@ -49,3 +49,7 @@ export async function initYandexAuth(): Promise<any> {
 
   return handler();
 }
+
+export function getYandexToken(): string | null {
+  return localStorage.getItem("Ya.Oauth.Sdk.Token");
+}

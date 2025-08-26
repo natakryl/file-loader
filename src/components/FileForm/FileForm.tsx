@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 import "./FileForm.scss";
 import { useFileUpload } from "../../hooks/useFileUpload";
+import { SuccessLink } from "./SuccessLink";
+import { formatSize } from "../../utils/formatSize";
 
 export default function FileForm() {
   const {
@@ -16,13 +18,6 @@ export default function FileForm() {
   } = useFileUpload();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const formatSize = (size: number) => {
-    if (size < 1024) return size + " B";
-    if (size < 1024 ** 2) return (size / 1024).toFixed(1) + " KB";
-    if (size < 1024 ** 3) return (size / 1024 ** 2).toFixed(1) + " MB";
-    return (size / 1024 ** 3).toFixed(1) + " GB";
-  };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -100,14 +95,7 @@ export default function FileForm() {
         {loading ? "Загрузка..." : "Загрузить"}
       </button>
 
-      {downloadUrl && (
-        <div className="success">
-          Файл загружен.{" "}
-          <a href={downloadUrl} target="_blank" rel="noreferrer">
-            Скачать
-          </a>
-        </div>
-      )}
+     {downloadUrl && <SuccessLink url={downloadUrl} />}
     </form>
   );
 }

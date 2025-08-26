@@ -1,3 +1,5 @@
+import { getYandexToken } from "./AuthService";
+
 interface UploadOptions {
   file: File;
   fileName: string;
@@ -9,7 +11,7 @@ export async function uploadFileToYandexDisk({
   fileName,
   overwrite = false,
 }: UploadOptions): Promise<string | null> {
-  const token = localStorage.getItem("Ya.Oauth.Sdk.Token") 
+    const token = getYandexToken();
 
   const path = encodeURIComponent(`/${fileName}`);
   const uploadUrl = `https://cloud-api.yandex.net/v1/disk/resources/upload?path=${path}&overwrite=${overwrite}`;

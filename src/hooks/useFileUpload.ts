@@ -9,9 +9,9 @@ export function useFileUpload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-const handleFileChange = (f: File | null) => {
-  setFile(f);
-  if (f) setFileName(f.name);
+const handleFileChange = (selectedFile: File | null) => {
+  setFile(selectedFile);
+  if (selectedFile) setFileName(selectedFile.name);
   setOverwrite(false); 
   setError(null);       
 };
