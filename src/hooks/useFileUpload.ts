@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { uploadFileToYandexDisk } from "../services/FileService";
+import type{ IFileUploader } from "../services/IFileUploader";
 
-export function useFileUpload() {
+export function useFileUpload(fileUploader: IFileUploader) {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
   const [overwrite, setOverwrite] = useState(false); 
@@ -24,7 +24,7 @@ const handleFileChange = (selectedFile: File | null) => {
     setDownloadUrl(null);
 
     try {
-      const url = await uploadFileToYandexDisk({ file, fileName, overwrite });
+      const url = await fileUploader.uploadFile(file, fileName, overwrite);
       setDownloadUrl(url);
       setOverwrite(false);
     } catch (err: any) {

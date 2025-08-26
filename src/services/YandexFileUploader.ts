@@ -1,20 +1,11 @@
+import type { IFileUploader } from "./IFileUploader";
 import { getYandexToken } from "./AuthService";
 
-interface UploadOptions {
-  file: File;
-  fileName: string;
-  overwrite?: boolean;
-}
-
-export async function uploadFileToYandexDisk({
-  file,
-  fileName,
-  overwrite = false,
-}: UploadOptions): Promise<string | null> {
+export class YandexFileUploader implements IFileUploader {  
+   async uploadFile(file: File, fileName: string, overwrite = false): Promise<string | null> {
     const token = getYandexToken();
-
-  const path = encodeURIComponent(`/${fileName}`);
-  const uploadUrl = `https://cloud-api.yandex.net/v1/disk/resources/upload?path=${path}&overwrite=${overwrite}`;
+    const path = encodeURIComponent(`/${fileName}`);
+    const uploadUrl = `https://cloud-api.yandex.net/v1/disk/resources/upload?path=${path}&overwrite=${overwrite}`;
 
   //Запрашиваем URL для загрузки
   const uploadLinkResponse = await fetch(uploadUrl, {
@@ -55,4 +46,5 @@ export async function uploadFileToYandexDisk({
 
   const { href: downloadHref } = await downloadLinkResponse.json();
   return downloadHref || null;
+}
 }

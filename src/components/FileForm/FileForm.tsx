@@ -3,6 +3,7 @@ import "./FileForm.scss";
 import { useFileUpload } from "../../hooks/useFileUpload";
 import { SuccessLink } from "./SuccessLink";
 import { formatSize } from "../../utils/formatSize";
+import { YandexFileUploader } from "../../services/YandexFileUploader";
 
 export default function FileForm() {
   const {
@@ -15,7 +16,7 @@ export default function FileForm() {
     error,
     downloadUrl,
     setOverwrite,
-  } = useFileUpload();
+  } = useFileUpload(new YandexFileUploader());
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
