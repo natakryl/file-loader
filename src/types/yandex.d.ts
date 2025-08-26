@@ -24,9 +24,9 @@ declare global {
           customBorderHoveredColor?: string;
           customBorderWidth?: number;
         }
-      ) => Promise<{ status: "ok"; handler: () => Promise<any> }>;
+    ) => Promise<{ status: "ok"; handler: () => Promise<YandexToken> }>;
     };
 
-    YaSendSuggestToken?: (origin: string, opts?: Record<string, any>) => void;
+    YaSendSuggestToken?: (origin: string, opts?: Record<string, unknown>) => void;
   }
 }

@@ -1,3 +1,5 @@
+import type { YandexToken } from "../types/yandexToken";
+
 const CLIENT_ID = "c22a6ba7662d40b99c6823c31d6461ac";
 const REDIRECT_PATH = "/suggest/token";
 
@@ -20,7 +22,7 @@ function loadSdk(): Promise<void> {
 }
 
 // инициализация и авторизация
-export async function initYandexAuth(): Promise<any> {
+export async function initYandexAuth(): Promise<YandexToken>{
   await loadSdk();
 
   const origin = window.location.origin;
