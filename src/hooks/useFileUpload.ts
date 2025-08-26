@@ -1,4 +1,3 @@
-// src/hooks/useFileUpload.ts
 import { useState } from "react";
 import { uploadFileToYandexDisk } from "../services/FileService";
 
@@ -10,10 +9,12 @@ export function useFileUpload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = (f: File | null) => {
-    setFile(f);
-    if (f) setFileName(f.name);
-  };
+const handleFileChange = (f: File | null) => {
+  setFile(f);
+  if (f) setFileName(f.name);
+  setOverwrite(false); 
+  setError(null);       
+};
 
   const submitFile = async () => {
     if (!file || !fileName.trim()) return;
@@ -25,9 +26,11 @@ export function useFileUpload() {
     try {
       const url = await uploadFileToYandexDisk({ file, fileName, overwrite });
       setDownloadUrl(url);
+      setOverwrite(false);
     } catch (err: any) {
       if (err?.code === "DiskResourceAlreadyExistsError") {
         setError("Такой файл уже существует");
+        setOverwrite(true);
       } else {
         setError(err?.message || "Ошибка загрузки файла");
       }

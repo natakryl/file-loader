@@ -12,6 +12,7 @@ export default function FileForm() {
     loading,
     error,
     downloadUrl,
+    setOverwrite,
   } = useFileUpload();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -72,7 +73,28 @@ export default function FileForm() {
         />
       </label>
 
-      {error && <div className="error">{error}</div>}
+      {error && (
+        <div className="error">
+          {error}
+          {error.includes("существует") && (
+            <button
+              type="button"
+              onClick={() => {
+                const confirmed = window.confirm(
+                  "Файл уже существует. Перезаписать?"
+                );
+                if (confirmed) {
+                  setOverwrite(true);
+                  submitFile();
+                }
+              }}
+              disabled={loading}
+            >
+              Перезаписать файл
+            </button>
+          )}
+        </div>
+      )}
 
       <button type="submit" disabled={!file || !fileName.trim() || loading}>
         {loading ? "Загрузка..." : "Загрузить"}
