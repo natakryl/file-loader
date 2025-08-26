@@ -35,7 +35,6 @@ export async function initYandexAuth(): Promise<any> {
       client_id: CLIENT_ID,
       response_type: "token",
       redirect_uri: redirectUri,
-      scope: "disk:write",
     },
     origin,
     {
