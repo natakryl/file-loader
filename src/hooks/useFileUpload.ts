@@ -28,15 +28,14 @@ export function useFileUpload(fileUploader: IFileUploader) {
       const url = await fileUploader.uploadFile(file, fileName, overwrite);
       setDownloadUrl(url);
       setOverwrite(false);
-    } catch (err) {
-      if (err instanceof UploadError) {
-        if (err.code === "DiskResourceAlreadyExistsError") {
-          setError("Такой файл уже существует");
-          setOverwrite(true);
-        } else {
-          setError(err.message);
-        }
-      } 
+    } catch (err: unknown) {
+      if (err instanceof UploadError && err.code === "DiskResourceAlreadyExistsError") {
+        setError(err.message);
+        setOverwrite(true);
+      } else if (err instanceof Error) {
+        setError(err.message);
+        setOverwrite(true);
+      }
     } finally {
       setLoading(false);
     }
