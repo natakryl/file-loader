@@ -1,69 +1,56 @@
-# React + TypeScript + Vite
+# Файлообменник на React + TypeScript (Vite) с загрузкой в Яндекс Диск
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Небольшое SPA-приложение для авторизации через Яндекс и загрузки выбранного файла на Яндекс Диск пользователя. После успешной загрузки приложение возвращает ссылку для скачивания файла.
 
-Currently, two official plugins are available:
+### Возможности
+- **Вход через Яндекс** с использованием виджета `YaAuthSuggest` и страницы возврата токена
+- **Защищённый роут**: доступ к главной странице только для авторизованных пользователей
+- **Загрузка файла на Яндекс Диск** с отображением размера и имени 
+- **Обработка ошибок** 
+- **Ссылка на скачивание** после успешной загрузки
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Стек
+- **React 19**, **TypeScript**, **Vite 7**
+- **react-router-dom 7** для маршрутизации
+- SCSS для локальной стилизации формы
+- Еslint + Prettier для статики
 
-## Expanding the ESLint configuration
+## Требования
+- Node.js 18+ и npm
+- У зарегистрированного приложения в Яндексе должен быть корректный `client_id` 
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Быстрый старт
+1. Установите зависимости:
+```bash
+npm install
+```
+2. Запустите dev-сервер:
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. Откройте приложение в браузере (обычно `http://localhost:5173`).
+4. Нажмите «Войти через Яндекс» на странице `/auth` и завершите вход. После получения токена вы будете перенаправлены на главную страницу с формой загрузки.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Маршруты
+- `/auth` — инициализация виджета входа Яндекса и начало авторизации
+- `/suggest/token` — специальная страница, которую вызывает SDK для возврата токена в родительское окно
+- `/` — приватный роут с формой загрузки файла (доступен только после авторизации)
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Настройка авторизации Яндекс
+Константы находятся в `src/services/AuthService.ts`:
+- `CLIENT_ID` — идентификатор вашего приложения в Яндексе
+- `REDIRECT_PATH` — путь страницы возврата токена: `"/suggest/token"`
+
+## Скрипты npm
+- `npm run dev` — запуск разработки
+- `npm run build` — сборка (TypeScript build + Vite)
+- `npm run preview` — предпросмотр собранного приложения
+- `npm run lint` — запуск линтера
+
+
+## Переменные и ключи
+- `CLIENT_ID` в `AuthService.ts` — замените на свой `client_id` из Яндекс.OAuth.
+- Убедитесь, что `redirect_uri` (`/suggest/token`) прописан в настройках приложения в Яндексе.
+

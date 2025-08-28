@@ -1,55 +1,39 @@
-import { getYandexToken } from "./AuthService";
+import { BaseRequestService } from "./BaseRequestService";
 import type { IFileUploader } from "./IFileUploader";
-import { UploadError } from "./UploadError";
 
-export class YandexFileUploader implements IFileUploader {
+export class YandexFileUploader extends BaseRequestService implements IFileUploader {
+  constructor(baseUrl: string = "https://cloud-api.yandex.net/v1/disk") {
+    super(baseUrl);
+  }
+
+  private getToken(): HeadersInit | undefined {
+    const token = localStorage.getItem("Ya.Oauth.Sdk.Token");
+
+    if (!token) return;
+    return { Authorization: `OAuth ${token}` };
+  }
+
   async uploadFile(file: File, fileName: string, overwrite = false): Promise<string | null> {
-    const token = getYandexToken();
     const path = encodeURIComponent(`/${fileName}`);
-    const uploadUrl = `https://cloud-api.yandex.net/v1/disk/resources/upload?path=${path}&overwrite=${overwrite}`;
 
-    //Запрашиваем URL для загрузки
-    const uploadLinkResponse = await fetch(uploadUrl, {
-      method: "GET",
-      headers: { Authorization: `OAuth ${token}` },
-    });
-
-    if (!uploadLinkResponse.ok) {
-      let errJson: { message?: string } | null = null;
-      try {
-        errJson = await uploadLinkResponse.json();
-      } catch {}
-      if (uploadLinkResponse.status === 409) {
-        throw new UploadError("Файл уже существует", "DiskResourceAlreadyExistsError");
-      }
-
-      throw new UploadError(
-        errJson?.message || `Ошибка получения URL загрузки: ${uploadLinkResponse.status}`
+    try {
+      const { href, method } = await this.request<{ href: string; method?: string }>(
+        `/resources/upload?path=${path}&overwrite=${overwrite}`,
+        { method: "GET", headers: this.getToken() }
       );
+
+      await this.request<Response>(href, {
+        method: method || "PUT",
+        body: file,
+      });
+
+      const { href: downloadHref } = await this.request<{ href: string }>(
+        `/resources/download?path=${path}`,
+        { method: "GET", headers: this.getToken() }
+      );
+      return downloadHref || null;
+    } catch (error) {
+      throw error;
     }
-
-    const { href, method } = await uploadLinkResponse.json();
-
-    const uploadResponse = await fetch(href, {
-      method: method || "PUT",
-      body: file,
-    });
-
-   if (!(uploadResponse.status === 201 || uploadResponse.status === 202)) {
-      throw new UploadError(`Ошибка загрузки файла: ${uploadResponse.status}`);
-    }
-
-
-    const downloadLinkResponse = await fetch(
-      `https://cloud-api.yandex.net/v1/disk/resources/download?path=${path}`,
-      { headers: { Authorization: `OAuth ${token}` } }
-    );
-
-    if (!downloadLinkResponse.ok) {
-      return null;
-    }
-
-    const { href: downloadHref } = await downloadLinkResponse.json();
-    return downloadHref || null;
   }
 }
